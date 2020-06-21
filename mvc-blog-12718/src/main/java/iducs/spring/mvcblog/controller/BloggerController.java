@@ -57,13 +57,19 @@ public class BloggerController {
     	blogger.setBname(request.getParameter("bname"));    	
     	blogger.setBemail(request.getParameter("bemail"));  
     	*/
-    	blogger.setBid(bid);
-    	blogger.setBpw(bpw);
-    	blogger.setBname(bname);
-    	blogger.setBemail(bemail);
+    	Blogger bloggerDupl = bloggerService.getUserByBid(bid);
     	
-    	bloggerService.postBlogger(blogger);
-		return "redirect:" + "/";
+    	if(bloggerDupl == null) {
+	    	blogger.setBid(bid);
+	    	blogger.setBpw(bpw);
+	    	blogger.setBname(bname);
+	    	blogger.setBemail(bemail);
+	    	
+	    	bloggerService.postBlogger(blogger);
+			return "redirect:" + "/";	
+    	} else {
+    		throw new IOException("중복된 아이디입니다.");
+    	}
     }
     
     @GetMapping("/bloggers/new") // 등록폼
