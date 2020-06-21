@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+ 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="iducs.spring.mvcblog.mapper.BlogMapper">  
+  
+  	<insert id="create">
+  	insert into blog 
+  	values(seq_blog.nextval, #{title}, #{content}, #{filepath}, #{blogger}, #{regDateTime})
+  	</insert>
+  	
+    <select id="readList" resultType="iducs.spring.mvcblog.domain.Blog">
+    <![CDATA[
+    select 
+    	id, title, content, filepath, blogger, reg_date_time  
+    from
+    	blog 
+    order by id desc
+    ]]>    
+    </select>
+    
+    <select id="readListRegDate" resultType="iducs.spring.mvcblog.domain.Blog">
+    <![CDATA[
+    select 
+    	id, title, content, filepath, blogger, reg_date_time  
+    from
+    	blog 
+    order by reg_date_time asc
+    ]]>    
+    </select>
+    
+    <select id="read" resultType="iducs.spring.mvcblog.domain.Blog">
+    select 
+    	* 
+    from
+    	blog 
+   	where id = #{id}
+    </select>
+    
+    <select id="readTotalRowCount" resultType="int">
+    select 
+    	count(*) 
+    from
+    	blog
+    </select>
+    
+    <select id="readPage" resultType="iducs.spring.mvcblog.domain.Blog">
+	<![CDATA[
+	select *
+	from (
+		select rownum as rnum, id, title, content, filepath, blogger, reg_date_time
+		from (
+		select id, title, content, filepath, blogger, reg_date_time
+		from blog
+		order by id desc
+		)
+	)
+	where rnum between #{startRow} and #{endRow}
+	]]>
+	</select>
+	
+	<select id="searchPage" resultType="iducs.spring.mvcblog.domain.Blog">
+	<![CDATA[
+	select *
+	from (
+	select rownum as rnum, id, title, content, filepath, blogger, reg_date_time
+	from (
+	select id, title, content, filepath, blogger, reg_date_time
+	from blog
+	order by id desc
+	)
+	)
+	]]>
+	<include refid="search"></include>	<!-- 동적으로 SQL 할당 -->
+	</select>
+	
+	<sql id="search">
+	where ( title like '%' || #{keyword} || '%' )
+	</sql>
+    
+    <update id="update">
+    update blog 
+    set title=#{title}, content=#{content}, filepath=#{filepath}, 
+    blogger=#{blogger}, reg_date_time=#{regDateTime} 
+    where id = #{id}
+  	</update>
+  	
+  	<delete id="delete">
+  	delete 
+  	from blog 
+  	where id = #{id}
+  	</delete>
+</mapper>
